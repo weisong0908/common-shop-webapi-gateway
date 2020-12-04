@@ -30,7 +30,7 @@ namespace CommonShop.WebApiGateway
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "CommonShop.WebApiGateway", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Common Shop - Web API Gateway", Version = "v1" });
             });
         }
 
