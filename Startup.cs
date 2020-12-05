@@ -33,7 +33,7 @@ namespace CommonShop.WebApiGateway
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Common Shop - Web API Gateway", Version = "v1" });
             });
 
-            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IProductService, FakeProductService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

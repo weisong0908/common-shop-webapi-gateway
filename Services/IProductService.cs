@@ -5,6 +5,6 @@ namespace CommonShop.WebApiGateway.Services
 {
     public interface IProductService
     {
-        IEnumerable<Product> GetFakeProducts();
+        IEnumerable<Product> GetProducts();
     }
 }

@@ -24,7 +24,7 @@ namespace CommonShop.WebApiGateway.Controllers
         [HttpGet]
         public IActionResult GetProducts()
         {
-            var products = _productService.GetFakeProducts();
+            var products = _productService.GetProducts();
 
             return Ok(products);
         }
@@ -33,7 +33,7 @@ namespace CommonShop.WebApiGateway.Controllers
         public IActionResult GetProduct(Guid productId)
         {
             var product = _productService
-                .GetFakeProducts()
+                .GetProducts()
                 .SingleOrDefault(p => p.Id == productId);
 
             if (product == null)

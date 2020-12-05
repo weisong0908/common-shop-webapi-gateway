@@ -4,14 +4,14 @@ using CommonShop.WebApiGateway.Models;
 
 namespace CommonShop.WebApiGateway.Services
 {
-    public class ProductService : IProductService
+    public class FakeProductService : IProductService
     {
-        public ProductService()
+        public FakeProductService()
         {
 
         }
 
-        public IEnumerable<Product> GetFakeProducts()
+        public IEnumerable<Product> GetProducts()
         {
             var random = new Random();
             var products = new List<Product>();
