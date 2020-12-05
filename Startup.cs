@@ -33,6 +33,17 @@ namespace CommonShop.WebApiGateway
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Common Shop - Web API Gateway", Version = "v1" });
             });
 
+            services.AddCors(setupAction =>
+            {
+                setupAction.AddPolicy("web client", configurePolicy =>
+                {
+                    configurePolicy
+                        .WithOrigins(Configuration.GetSection("Security:AllowedOrigins").Get<string[]>())
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+
             services.AddScoped<IProductService, FakeProductService>();
         }
 
@@ -46,9 +57,11 @@ namespace CommonShop.WebApiGateway
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CommonShop.WebApiGateway v1"));
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors("web client");
 
             app.UseAuthorization();
 
