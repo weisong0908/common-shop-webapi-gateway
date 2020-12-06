@@ -37,8 +37,8 @@ namespace CommonShop.WebApiGateway.Services
                     Id = guids[i - 1],
                     Title = "Product " + i,
                     Description = "Some description",
-                    Price = Math.Round((decimal)random.NextDouble() * 100, 2),
-                    Category = "Category " + random.Next(1, 3),
+                    Price = i * 10,
+                    Category = i % 2 == 0 ? "Category 2" : "Category 1",
                     ThumbnailUrl = "https://bulma.io/images/placeholders/640x480.png"
                 });
             }
