@@ -13,7 +13,6 @@ namespace CommonShop.WebApiGateway.Services
 
         public IEnumerable<Product> GetProducts()
         {
-            var random = new Random();
             var products = new List<Product>();
 
             var guids = new List<Guid>()
