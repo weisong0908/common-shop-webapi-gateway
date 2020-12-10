@@ -10,5 +10,6 @@ namespace CommonShop.WebApiGateway.Models
         public decimal Price { get; set; }
         public string Category { get; set; }
         public string ThumbnailUrl { get; set; }
+        public int StockLevel { get; set; }
     }
 }

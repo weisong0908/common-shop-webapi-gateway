@@ -13,18 +13,23 @@ namespace CommonShop.WebApiGateway.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly ILogger<ProductsController> _logger;
-        private readonly IProductService _productService;
+        private readonly ISalesService _salesService;
+        private readonly IWarehouseService _warehouseService;
 
-        public ProductsController(ILogger<ProductsController> logger, IProductService productService)
+        public ProductsController(ILogger<ProductsController> logger, ISalesService salesService, IWarehouseService warehouseService)
         {
+            _salesService = salesService;
+            _warehouseService = warehouseService;
             _logger = logger;
-            _productService = productService;
         }
 
         [HttpGet]
         public IActionResult GetProducts()
         {
-            var products = _productService.GetProducts();
+            var products = _salesService.GetProducts();
+
+            foreach (var product in products)
+                product.StockLevel = _warehouseService.GetStockLevel(product.Id);
 
             return Ok(products);
         }
@@ -32,12 +37,12 @@ namespace CommonShop.WebApiGateway.Controllers
         [HttpGet("{productId}")]
         public IActionResult GetProduct(Guid productId)
         {
-            var product = _productService
-                .GetProducts()
-                .SingleOrDefault(p => p.Id == productId);
+            var product = _salesService.GetProduct(productId);
 
             if (product == null)
                 return NotFound();
+
+            product.StockLevel = _warehouseService.GetStockLevel(productId);
 
             return Ok(product);
         }

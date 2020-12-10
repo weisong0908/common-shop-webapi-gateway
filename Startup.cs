@@ -44,7 +44,8 @@ namespace CommonShop.WebApiGateway
                 });
             });
 
-            services.AddScoped<IProductService, FakeProductService>();
+            services.AddScoped<ISalesService, SalesService>();
+            services.AddScoped<IWarehouseService, WarehouseService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
