@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CommonShop.WebApiGateway.Models;
+using CommonShop.WebApiGateway.Models.Requests;
 
 namespace CommonShop.WebApiGateway.Services
 {
@@ -10,5 +11,6 @@ namespace CommonShop.WebApiGateway.Services
         Product GetProduct(Guid productId);
         IEnumerable<Order> GetOrders();
         Order GetOrder(Guid orderId);
+        Order CreateOrder(OrderCreation orderCreation);
     }
 }

@@ -32,6 +32,7 @@ namespace CommonShop.WebApiGateway.Helpers
                     Title = "Product " + i,
                     Description = "Some description",
                     Price = i * 10,
+                    Quantity = i % 3 + 1,
                     Category = i % 2 == 0 ? "Category 2" : "Category 1",
                     ThumbnailUrl = "https://bulma.io/images/placeholders/640x480.png"
                 });
@@ -64,7 +65,7 @@ namespace CommonShop.WebApiGateway.Helpers
                     Fees = new List<Guid>() { GetFees()[0].Id },
                     OrderStatus = OrderStatus.New
                 };
-                order.TotalPrice = GetProducts()[i].Price + GetProducts()[i + 1].Price + GetFees()[0].Cost;
+                order.TotalPrice = GetProducts()[i].Price * GetProducts()[i].Quantity + GetProducts()[i + 1].Price * GetProducts()[i + 1].Quantity + GetFees()[0].Cost;
 
                 orders.Add(order);
             }

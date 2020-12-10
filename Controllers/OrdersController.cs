@@ -1,4 +1,5 @@
 using System;
+using CommonShop.WebApiGateway.Models.Requests;
 using CommonShop.WebApiGateway.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -35,6 +36,14 @@ namespace CommonShop.WebApiGateway.Controllers
                 return NotFound();
 
             return Ok(order);
+        }
+
+        [HttpPost]
+        public IActionResult CreateOrder([FromBody] OrderCreation orderCreation)
+        {
+            var order = _salesService.CreateOrder(orderCreation);
+
+            return CreatedAtAction(nameof(GetOrder), new { orderId = order.Id }, order);
         }
     }
 }
