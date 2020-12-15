@@ -12,5 +12,8 @@ namespace CommonShop.WebApiGateway.Services
         IEnumerable<Order> GetOrders();
         Order GetOrder(Guid orderId);
         Order CreateOrder(OrderCreation orderCreation);
+        Address GetAddress(Guid id);
+        Customer GetCustomer(Guid id);
+        Fee GetFee(Guid id);
     }
 }

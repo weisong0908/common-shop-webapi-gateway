@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using CommonShop.WebApiGateway.Models.Requests;
+using CommonShop.WebApiGateway.Models.Responses;
 using CommonShop.WebApiGateway.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -35,7 +37,18 @@ namespace CommonShop.WebApiGateway.Controllers
             if (order == null)
                 return NotFound();
 
-            return Ok(order);
+            var orderDetails = new OrderDetails();
+            orderDetails.Id = order.Id;
+            orderDetails.Date = order.Date;
+            orderDetails.Customer = _salesService.GetCustomer(order.Customer);
+            orderDetails.Fees = order.Fees.Select(f => _salesService.GetFee(f));
+            orderDetails.OrderStatus = order.OrderStatus.ToString();
+            orderDetails.Products = order.Products.Select(p => _salesService.GetProduct(p));
+            orderDetails.ShippingAddress = _salesService.GetAddress(order.ShippingAddress);
+            orderDetails.TotalQuantity = orderDetails.Products.Sum(p => p.Quantity);
+            orderDetails.TotalPrice = order.TotalPrice;
+
+            return Ok(orderDetails);
         }
 
         [HttpPost]
