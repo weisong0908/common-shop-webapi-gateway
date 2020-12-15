@@ -7,7 +7,7 @@
 
 ## About This Project
 
-This is the web API gateway for an imaginery e-commerce website called "**Common Shop**". It is built with .NET 5.
+This is the web API gateway for an imaginary e-commerce website called "**Common Shop**". It is built with .NET 5.
 
 CICD is implemented with Github Actions and the swagger documentation of the web API gateway is hosted [here](https://common-shop-webapi.tengweisong.com/swagger/index.html).
 
