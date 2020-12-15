@@ -1,4 +1,4 @@
-name: Active releases
+name: active releases
 
 on:
   push:
