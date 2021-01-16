@@ -44,6 +44,10 @@ namespace CommonShop.WebApiGateway
                 });
             });
 
+            services.AddHttpClient("sales service", configureClient =>
+            {
+                configureClient.BaseAddress = new Uri(Configuration.GetSection("Services:Sales").Get<string>());
+            });
             services.AddScoped<ISalesService, SalesService>();
             services.AddScoped<IWarehouseService, WarehouseService>();
         }

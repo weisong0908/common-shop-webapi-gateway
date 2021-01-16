@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CommonShop.WebApiGateway.Models;
 using CommonShop.WebApiGateway.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -24,9 +25,9 @@ namespace CommonShop.WebApiGateway.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetProducts()
+        public async Task<IActionResult> GetProducts()
         {
-            var products = _salesService.GetProducts();
+            var products = await _salesService.GetProducts();
 
             foreach (var product in products)
                 product.StockLevel = _warehouseService.GetStockLevel(product.Id);
@@ -35,14 +36,12 @@ namespace CommonShop.WebApiGateway.Controllers
         }
 
         [HttpGet("{productId}")]
-        public IActionResult GetProduct(Guid productId)
+        public async Task<IActionResult> GetProduct(Guid productId)
         {
-            var product = _salesService.GetProduct(productId);
+            var product = await _salesService.GetProduct(productId);
 
             if (product == null)
                 return NotFound();
-
-            product.StockLevel = _warehouseService.GetStockLevel(productId);
 
             return Ok(product);
         }

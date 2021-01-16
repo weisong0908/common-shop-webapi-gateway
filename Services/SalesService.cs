@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading.Tasks;
 using CommonShop.WebApiGateway.Helpers;
 using CommonShop.WebApiGateway.Models;
 using CommonShop.WebApiGateway.Models.Requests;
@@ -14,24 +17,49 @@ namespace CommonShop.WebApiGateway.Services
         IEnumerable<Address> _addresses;
         IEnumerable<Customer> _customers;
         IEnumerable<Fee> _fees;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public SalesService()
+        public SalesService(IHttpClientFactory httpClientFactory)
         {
             _products = SeedData.GetProducts();
             _orders = SeedData.GetOrders();
             _addresses = SeedData.GetAddresses();
             _customers = SeedData.GetCustomers();
             _fees = SeedData.GetFees();
+
+            _httpClientFactory = httpClientFactory;
         }
 
-        public IEnumerable<Product> GetProducts()
+        public async Task<IEnumerable<Product>> GetProducts()
         {
-            return _products;
+            var client = _httpClientFactory.CreateClient("sales service");
+            var response = await client.GetAsync("products");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var products = JsonSerializer
+                    .Deserialize<IEnumerable<Product>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                return products;
+            }
+
+            return null;
         }
 
-        public Product GetProduct(Guid productId)
+        public async Task<Product> GetProduct(Guid productId)
         {
-            return _products.SingleOrDefault(p => p.Id == productId);
+            var client = _httpClientFactory.CreateClient("sales service");
+            var response = await client.GetAsync($"products/{productId.ToString()}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var product = JsonSerializer
+                    .Deserialize<Product>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                return product;
+            }
+
+            return null;
         }
 
         public IEnumerable<Order> GetOrders()
