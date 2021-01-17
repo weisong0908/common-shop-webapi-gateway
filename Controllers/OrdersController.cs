@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using CommonShop.WebApiGateway.Models.Requests;
 using CommonShop.WebApiGateway.Models.Responses;
 using CommonShop.WebApiGateway.Services;
@@ -13,21 +15,35 @@ namespace CommonShop.WebApiGateway.Controllers
     [Route("[controller]")]
     public class OrdersController : ControllerBase
     {
-        private readonly ILogger<OrdersController> _logger;
         private readonly ISalesService _salesService;
+        private readonly ILogger<OrdersController> _logger;
+        private readonly IMapper _mapper;
 
-        public OrdersController(ILogger<OrdersController> logger, ISalesService salesService)
+        public OrdersController(ISalesService salesService, ILogger<OrdersController> logger, IMapper mapper)
         {
-            _logger = logger;
             _salesService = salesService;
+            _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetOrders()
+        public async Task<IActionResult> GetSimpleOrders()
         {
             var orders = await _salesService.GetOrders();
 
-            return Ok(orders);
+            var simpleOrders = _mapper.Map<IEnumerable<SimpleOrder>>(orders);
+
+            return Ok(simpleOrders);
+        }
+
+        [HttpGet("admin")]
+        public async Task<IActionResult> GetSimpleOrdersWithStatus()
+        {
+            var orders = await _salesService.GetOrders();
+
+            var simpleOrders = _mapper.Map<IEnumerable<SimpleOrderForAdmin>>(orders);
+
+            return Ok(simpleOrders);
         }
 
         [HttpGet("{orderId}")]
@@ -38,7 +54,8 @@ namespace CommonShop.WebApiGateway.Controllers
             if (order == null)
                 return NotFound();
 
-            return Ok(order);
+            var detailedOrder = _mapper.Map<DetailedOrder>(order);
+            return Ok(detailedOrder);
         }
     }
 }
