@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using CommonShop.WebApiGateway.Helpers;
 using CommonShop.WebApiGateway.Models;
 using CommonShop.WebApiGateway.Models.Requests;
 
@@ -12,21 +11,10 @@ namespace CommonShop.WebApiGateway.Services
 {
     public class SalesService : ISalesService
     {
-        IEnumerable<Product> _products;
-        IEnumerable<Order> _orders;
-        IEnumerable<Address> _addresses;
-        IEnumerable<Customer> _customers;
-        IEnumerable<Fee> _fees;
         private readonly IHttpClientFactory _httpClientFactory;
 
         public SalesService(IHttpClientFactory httpClientFactory)
         {
-            _products = SeedData.GetProducts();
-            _orders = SeedData.GetOrders();
-            _addresses = SeedData.GetAddresses();
-            _customers = SeedData.GetCustomers();
-            _fees = SeedData.GetFees();
-
             _httpClientFactory = httpClientFactory;
         }
 
@@ -62,46 +50,36 @@ namespace CommonShop.WebApiGateway.Services
             return null;
         }
 
-        public IEnumerable<Order> GetOrders()
+        public async Task<IEnumerable<Order>> GetOrders()
         {
-            return _orders;
-        }
+            var client = _httpClientFactory.CreateClient("sales service");
+            var response = await client.GetAsync("orders");
 
-        public Order GetOrder(Guid orderId)
-        {
-            return _orders.SingleOrDefault(o => o.Id == orderId);
-        }
-
-        public Order CreateOrder(OrderCreation orderCreation)
-        {
-            var order = new Order()
+            if (response.IsSuccessStatusCode)
             {
-                Id = Guid.NewGuid(),
-                Date = DateTime.Now
-            };
+                var content = await response.Content.ReadAsStringAsync();
+                var orders = JsonSerializer
+                    .Deserialize<IEnumerable<Order>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true, });
+                return orders;
+            }
 
-            order.Customer = orderCreation.CustomerId;
-            order.OrderStatus = OrderStatus.New;
-            order.Products = orderCreation.Products.Select(p => p.Id);
-            order.ShippingAddress = orderCreation.AddressId;
-            order.TotalPrice = orderCreation.Products.Sum(p => p.Price * p.Quantity);
-
-            return order;
+            return null;
         }
 
-        public Address GetAddress(Guid id)
+        public async Task<Order> GetOrder(Guid orderId)
         {
-            return _addresses.SingleOrDefault(a => a.Id == id);
-        }
+            var client = _httpClientFactory.CreateClient("sales service");
+            var response = await client.GetAsync($"orders/{orderId.ToString()}");
 
-        public Customer GetCustomer(Guid id)
-        {
-            return _customers.SingleOrDefault(a => a.Id == id);
-        }
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var order = JsonSerializer
+                    .Deserialize<Order>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                return order;
+            }
 
-        public Fee GetFee(Guid id)
-        {
-            return _fees.SingleOrDefault(a => a.Id == id);
+            return null;
         }
     }
 }

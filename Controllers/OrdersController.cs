@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using CommonShop.WebApiGateway.Models.Requests;
 using CommonShop.WebApiGateway.Models.Responses;
 using CommonShop.WebApiGateway.Services;
@@ -22,41 +23,22 @@ namespace CommonShop.WebApiGateway.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetOrders()
+        public async Task<IActionResult> GetOrders()
         {
-            var orders = _salesService.GetOrders();
+            var orders = await _salesService.GetOrders();
 
             return Ok(orders);
         }
 
         [HttpGet("{orderId}")]
-        public IActionResult GetOrder(Guid orderId)
+        public async Task<IActionResult> GetOrder(Guid orderId)
         {
-            var order = _salesService.GetOrder(orderId);
+            var order = await _salesService.GetOrder(orderId);
 
             if (order == null)
                 return NotFound();
 
-            var orderDetails = new OrderDetails();
-            orderDetails.Id = order.Id;
-            orderDetails.Date = order.Date;
-            orderDetails.Customer = _salesService.GetCustomer(order.Customer);
-            orderDetails.Fees = order.Fees.Select(f => _salesService.GetFee(f));
-            orderDetails.OrderStatus = order.OrderStatus.ToString();
-            // orderDetails.Products = order.Products.Select(p => _salesService.GetProduct(p));
-            orderDetails.ShippingAddress = _salesService.GetAddress(order.ShippingAddress);
-            orderDetails.TotalQuantity = orderDetails.Products.Sum(p => p.Quantity);
-            orderDetails.TotalPrice = order.TotalPrice;
-
-            return Ok(orderDetails);
-        }
-
-        [HttpPost]
-        public IActionResult CreateOrder([FromBody] OrderCreation orderCreation)
-        {
-            var order = _salesService.CreateOrder(orderCreation);
-
-            return CreatedAtAction(nameof(GetOrder), new { orderId = order.Id }, order);
+            return Ok(order);
         }
     }
 }

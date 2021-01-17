@@ -10,11 +10,7 @@ namespace CommonShop.WebApiGateway.Services
     {
         Task<IEnumerable<Product>> GetProducts();
         Task<Product> GetProduct(Guid productId);
-        IEnumerable<Order> GetOrders();
-        Order GetOrder(Guid orderId);
-        Order CreateOrder(OrderCreation orderCreation);
-        Address GetAddress(Guid id);
-        Customer GetCustomer(Guid id);
-        Fee GetFee(Guid id);
+        Task<IEnumerable<Order>> GetOrders();
+        Task<Order> GetOrder(Guid orderId);
     }
 }

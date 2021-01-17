@@ -9,7 +9,6 @@ namespace CommonShop.WebApiGateway.Models
         public string Name { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
-        public IEnumerable<Guid> Addresses { get; set; }
-        public Guid PrimaryAddress { get; set; }
+        public Address PrimaryAddress { get; set; }
     }
 }
