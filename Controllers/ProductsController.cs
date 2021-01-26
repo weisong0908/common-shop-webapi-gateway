@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
 using System.Threading.Tasks;
 using CommonShop.WebApiGateway.Models;
 using CommonShop.WebApiGateway.Services;
@@ -44,6 +45,18 @@ namespace CommonShop.WebApiGateway.Controllers
                 return NotFound();
 
             return Ok(product);
+        }
+
+        [HttpPut("{productId}")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        public async Task<IActionResult> UpdateProduct(Guid productId, Product product)
+        {
+            if (productId != product.Id)
+                return BadRequest();
+
+            await _salesService.UpdateProduct(product);
+
+            return NoContent();
         }
     }
 }

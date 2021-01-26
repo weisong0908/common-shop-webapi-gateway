@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Mime;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using CommonShop.WebApiGateway.Models;
@@ -48,6 +50,15 @@ namespace CommonShop.WebApiGateway.Services
             }
 
             return null;
+        }
+
+        public async Task UpdateProduct(Product product)
+        {
+            var client = _httpClientFactory.CreateClient("sales service");
+
+            var httpContent = new StringContent(JsonSerializer.Serialize<Product>(product), Encoding.UTF8, MediaTypeNames.Application.Json);
+
+            var response = await client.PutAsync($"products/{product.Id.ToString()}", httpContent);
         }
 
         public async Task<IEnumerable<Order>> GetOrders()
