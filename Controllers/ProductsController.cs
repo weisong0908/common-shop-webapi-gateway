@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using CommonShop.WebApiGateway.Models;
@@ -54,9 +55,34 @@ namespace CommonShop.WebApiGateway.Controllers
             if (productId != product.Id)
                 return BadRequest();
 
-            await _salesService.UpdateProduct(product);
+            try
+            {
+                await _salesService.UpdateProduct(product);
+            }
+            catch (HttpRequestException)
+            {
+                return BadRequest();
+            }
 
             return NoContent();
+        }
+
+        [HttpPost]
+        [Consumes(MediaTypeNames.Application.Json)]
+        public async Task<IActionResult> CreateProduct(Product product)
+        {
+            Product productCreated;
+
+            try
+            {
+                productCreated = await _salesService.CreateProduct(product);
+            }
+            catch (HttpRequestException)
+            {
+                return BadRequest();
+            }
+
+            return CreatedAtAction(nameof(GetProduct), new { productId = productCreated.Id }, productCreated);
         }
     }
 }

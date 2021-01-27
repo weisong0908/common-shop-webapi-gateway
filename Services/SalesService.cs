@@ -23,7 +23,7 @@ namespace CommonShop.WebApiGateway.Services
         public async Task<IEnumerable<Product>> GetProducts()
         {
             var client = _httpClientFactory.CreateClient("sales service");
-            var response = await client.GetAsync("products");
+            var response = await client.GetAsync("/products");
 
             if (response.IsSuccessStatusCode)
             {
@@ -39,7 +39,7 @@ namespace CommonShop.WebApiGateway.Services
         public async Task<Product> GetProduct(Guid productId)
         {
             var client = _httpClientFactory.CreateClient("sales service");
-            var response = await client.GetAsync($"products/{productId.ToString()}");
+            var response = await client.GetAsync($"/products/{productId.ToString()}");
 
             if (response.IsSuccessStatusCode)
             {
@@ -58,13 +58,30 @@ namespace CommonShop.WebApiGateway.Services
 
             var httpContent = new StringContent(JsonSerializer.Serialize<Product>(product), Encoding.UTF8, MediaTypeNames.Application.Json);
 
-            var response = await client.PutAsync($"products/{product.Id.ToString()}", httpContent);
+            var response = await client.PutAsync($"/products/{product.Id.ToString()}", httpContent);
+
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task<Product> CreateProduct(Product product)
+        {
+            var client = _httpClientFactory.CreateClient("sales service");
+
+            var httpContent = new StringContent(JsonSerializer.Serialize<Product>(product), Encoding.UTF8, MediaTypeNames.Application.Json);
+
+            var response = await client.PostAsync($"/products", httpContent);
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonSerializer
+                .Deserialize<Product>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         public async Task<IEnumerable<Order>> GetOrders()
         {
             var client = _httpClientFactory.CreateClient("sales service");
-            var response = await client.GetAsync("orders");
+            var response = await client.GetAsync("/orders");
 
             if (response.IsSuccessStatusCode)
             {
@@ -80,7 +97,7 @@ namespace CommonShop.WebApiGateway.Services
         public async Task<Order> GetOrder(Guid orderId)
         {
             var client = _httpClientFactory.CreateClient("sales service");
-            var response = await client.GetAsync($"orders/{orderId.ToString()}");
+            var response = await client.GetAsync($"/orders/{orderId.ToString()}");
 
             if (response.IsSuccessStatusCode)
             {
