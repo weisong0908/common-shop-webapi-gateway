@@ -52,11 +52,11 @@ namespace CommonShop.WebApiGateway.Services
             return null;
         }
 
-        public async Task UpdateProduct(Product product)
+        public async Task UpdateProduct(ProductModification product)
         {
             var client = _httpClientFactory.CreateClient("sales service");
 
-            var httpContent = new StringContent(JsonSerializer.Serialize<Product>(product), Encoding.UTF8, MediaTypeNames.Application.Json);
+            var httpContent = new StringContent(JsonSerializer.Serialize<ProductModification>(product), Encoding.UTF8, MediaTypeNames.Application.Json);
 
             var response = await client.PutAsync($"/products/{product.Id.ToString()}", httpContent);
 
@@ -85,6 +85,22 @@ namespace CommonShop.WebApiGateway.Services
             var response = await client.DeleteAsync($"/products/{productId.ToString()}");
 
             response.EnsureSuccessStatusCode();
+        }
+
+        public async Task<IEnumerable<ProductCategory>> GetProductCategories()
+        {
+            var client = _httpClientFactory.CreateClient("sales service");
+            var response = await client.GetAsync("/products/categories");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var productCategories = JsonSerializer
+                    .Deserialize<IEnumerable<ProductCategory>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                return productCategories;
+            }
+
+            return null;
         }
 
         public async Task<IEnumerable<Order>> GetOrders()

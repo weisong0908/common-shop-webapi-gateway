@@ -4,7 +4,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Threading.Tasks;
+using AutoMapper;
 using CommonShop.WebApiGateway.Models;
+using CommonShop.WebApiGateway.Models.Requests;
+using CommonShop.WebApiGateway.Models.Responses;
 using CommonShop.WebApiGateway.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -18,9 +21,11 @@ namespace CommonShop.WebApiGateway.Controllers
         private readonly ILogger<ProductsController> _logger;
         private readonly ISalesService _salesService;
         private readonly IWarehouseService _warehouseService;
+        private readonly IMapper _mapper;
 
-        public ProductsController(ILogger<ProductsController> logger, ISalesService salesService, IWarehouseService warehouseService)
+        public ProductsController(ILogger<ProductsController> logger, ISalesService salesService, IWarehouseService warehouseService, IMapper mapper)
         {
+            _mapper = mapper;
             _salesService = salesService;
             _warehouseService = warehouseService;
             _logger = logger;
@@ -34,7 +39,7 @@ namespace CommonShop.WebApiGateway.Controllers
             foreach (var product in products)
                 product.StockLevel = _warehouseService.GetStockLevel(product.Id);
 
-            return Ok(products);
+            return Ok(_mapper.Map<IEnumerable<DetailedProduct>>(products));
         }
 
         [HttpGet("{productId}")]
@@ -45,19 +50,19 @@ namespace CommonShop.WebApiGateway.Controllers
             if (product == null)
                 return NotFound();
 
-            return Ok(product);
+            return Ok(_mapper.Map<DetailedProduct>(product));
         }
 
         [HttpPut("{productId}")]
         [Consumes(MediaTypeNames.Application.Json)]
-        public async Task<IActionResult> UpdateProduct(Guid productId, Product product)
+        public async Task<IActionResult> UpdateProduct(Guid productId, ProductModification productModification)
         {
-            if (productId != product.Id)
+            if (productId != productModification.Id)
                 return BadRequest();
 
             try
             {
-                await _salesService.UpdateProduct(product);
+                await _salesService.UpdateProduct(productModification);
             }
             catch (HttpRequestException)
             {
@@ -98,6 +103,16 @@ namespace CommonShop.WebApiGateway.Controllers
             }
 
             return NoContent();
+        }
+
+        [HttpGet("categories")]
+        public async Task<IActionResult> GetProductCategories()
+        {
+            var productCategories = await _salesService.GetProductCategories();
+
+            _logger.LogInformation($"{productCategories.Count()} productCategories found");
+
+            return Ok(productCategories);
         }
     }
 }

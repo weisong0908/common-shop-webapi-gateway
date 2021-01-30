@@ -1,5 +1,6 @@
 using AutoMapper;
 using CommonShop.WebApiGateway.Models;
+using CommonShop.WebApiGateway.Models.Requests;
 using CommonShop.WebApiGateway.Models.Responses;
 
 namespace CommonShop.WebApiGateway.Mappings
@@ -14,6 +15,9 @@ namespace CommonShop.WebApiGateway.Mappings
             CreateMap<Order, DetailedOrder>()
                 .ForMember(d => d.Products, memberOptions => memberOptions.MapFrom(o => o.OrderProducts))
                 .ForMember(s => s.OrderStatus, memberOptions => memberOptions.MapFrom(o => ((OrderStatus)o.OrderStatus).ToString()));
+
+            CreateMap<Product, DetailedProduct>()
+                .ForMember(d => d.Category, memberOptions => memberOptions.MapFrom(p => p.ProductCategory.Title));
 
             CreateMap<OrderProduct, OrderItem>()
                 .ForMember(oi => oi.Id, memberOptions => memberOptions.MapFrom(op => op.Product.Id))
