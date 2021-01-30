@@ -78,6 +78,15 @@ namespace CommonShop.WebApiGateway.Services
                 .Deserialize<Product>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
+        public async Task DeleteProduct(Guid productId)
+        {
+            var client = _httpClientFactory.CreateClient("sales service");
+
+            var response = await client.DeleteAsync($"/products/{productId.ToString()}");
+
+            response.EnsureSuccessStatusCode();
+        }
+
         public async Task<IEnumerable<Order>> GetOrders()
         {
             var client = _httpClientFactory.CreateClient("sales service");

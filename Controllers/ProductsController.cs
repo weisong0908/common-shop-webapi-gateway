@@ -84,5 +84,20 @@ namespace CommonShop.WebApiGateway.Controllers
 
             return CreatedAtAction(nameof(GetProduct), new { productId = productCreated.Id }, productCreated);
         }
+
+        [HttpDelete("{productId}")]
+        public async Task<IActionResult> DeleteProduct(Guid productId)
+        {
+            try
+            {
+                await _salesService.DeleteProduct(productId);
+            }
+            catch (HttpRequestException)
+            {
+                return BadRequest();
+            }
+
+            return NoContent();
+        }
     }
 }
