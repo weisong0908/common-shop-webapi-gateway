@@ -25,10 +25,10 @@ namespace CommonShop.WebApiGateway.Controllers
 
         public ProductsController(ILogger<ProductsController> logger, ISalesService salesService, IWarehouseService warehouseService, IMapper mapper)
         {
-            _mapper = mapper;
+            _logger = logger;
             _salesService = salesService;
             _warehouseService = warehouseService;
-            _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -74,13 +74,13 @@ namespace CommonShop.WebApiGateway.Controllers
 
         [HttpPost]
         [Consumes(MediaTypeNames.Application.Json)]
-        public async Task<IActionResult> CreateProduct(Product product)
+        public async Task<IActionResult> CreateProduct(ProductModification productModification)
         {
             Product productCreated;
 
             try
             {
-                productCreated = await _salesService.CreateProduct(product);
+                productCreated = await _salesService.CreateProduct(productModification);
             }
             catch (HttpRequestException)
             {

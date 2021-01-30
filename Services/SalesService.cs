@@ -63,11 +63,11 @@ namespace CommonShop.WebApiGateway.Services
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task<Product> CreateProduct(Product product)
+        public async Task<Product> CreateProduct(ProductModification product)
         {
             var client = _httpClientFactory.CreateClient("sales service");
 
-            var httpContent = new StringContent(JsonSerializer.Serialize<Product>(product), Encoding.UTF8, MediaTypeNames.Application.Json);
+            var httpContent = new StringContent(JsonSerializer.Serialize<ProductModification>(product), Encoding.UTF8, MediaTypeNames.Application.Json);
 
             var response = await client.PostAsync($"/products", httpContent);
 
