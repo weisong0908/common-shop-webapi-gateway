@@ -32,14 +32,22 @@ namespace CommonShop.WebApiGateway.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetProducts()
+        public async Task<IActionResult> GetProducts([FromQuery] int pageSize, [FromQuery] int pageNumber, [FromQuery] string category)
         {
-            var products = await _salesService.GetProducts();
+            var products = await _salesService.GetProducts(pageSize, (pageNumber - 1) * pageSize, category);
+
+            var totalProductCount = await _salesService.GetTotalProductCount(category);
 
             foreach (var product in products)
                 product.StockLevel = _warehouseService.GetStockLevel(product.Id);
 
-            return Ok(_mapper.Map<IEnumerable<DetailedProduct>>(products));
+            var response = new DetailedProductListing()
+            {
+                Products = _mapper.Map<IEnumerable<DetailedProduct>>(products),
+                TotalProductCount = totalProductCount
+            };
+
+            return Ok(response);
         }
 
         [HttpGet("{productId}")]

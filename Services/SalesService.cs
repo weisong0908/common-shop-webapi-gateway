@@ -20,10 +20,26 @@ namespace CommonShop.WebApiGateway.Services
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<IEnumerable<Product>> GetProducts()
+        public async Task<int> GetTotalProductCount(string category = "")
         {
             var client = _httpClientFactory.CreateClient("sales service");
-            var response = await client.GetAsync("/products");
+            var response = await client.GetAsync($"/products/count?category={category}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var totalProductCount = JsonSerializer
+                    .Deserialize<int>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                return totalProductCount;
+            }
+
+            return 0;
+        }
+
+        public async Task<IEnumerable<Product>> GetProducts(int take, int skip = 0, string category = "")
+        {
+            var client = _httpClientFactory.CreateClient("sales service");
+            var response = await client.GetAsync($"/products?take={take}&skip={skip}&category={category}");
 
             if (response.IsSuccessStatusCode)
             {

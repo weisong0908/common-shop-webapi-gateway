@@ -8,7 +8,8 @@ namespace CommonShop.WebApiGateway.Services
 {
     public interface ISalesService
     {
-        Task<IEnumerable<Product>> GetProducts();
+        Task<int> GetTotalProductCount(string category = "");
+        Task<IEnumerable<Product>> GetProducts(int take, int skip = 0, string category = "");
         Task<Product> GetProduct(Guid productId);
         Task UpdateProduct(ProductModification product);
         Task<Product> CreateProduct(ProductModification product);
