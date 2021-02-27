@@ -9,6 +9,7 @@ using CommonShop.WebApiGateway.Models;
 using CommonShop.WebApiGateway.Models.Requests;
 using CommonShop.WebApiGateway.Models.Responses;
 using CommonShop.WebApiGateway.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -32,6 +33,7 @@ namespace CommonShop.WebApiGateway.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetProducts([FromQuery] int pageSize, [FromQuery] int pageNumber, [FromQuery] string category)
         {
             var products = await _salesService.GetProducts(pageSize, (pageNumber - 1) * pageSize, category);

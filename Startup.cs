@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using AutoMapper;
 using CommonShop.WebApiGateway.Mappings;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace CommonShop.WebApiGateway
 {
@@ -46,6 +47,16 @@ namespace CommonShop.WebApiGateway
                 });
             });
 
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.Authority = Configuration.GetSection("Authentication:Authority").Get<string>();
+                options.Audience = Configuration.GetSection("Authentication:Audience").Get<string>();
+            });
+
             services.AddHttpClient("sales service", configureClient =>
             {
                 configureClient.BaseAddress = new Uri(Configuration.GetSection("Services:Sales").Get<string>());
@@ -72,6 +83,7 @@ namespace CommonShop.WebApiGateway
 
             app.UseCors("web client");
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
