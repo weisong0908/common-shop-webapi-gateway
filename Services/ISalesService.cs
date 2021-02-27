@@ -15,7 +15,8 @@ namespace CommonShop.WebApiGateway.Services
         Task<Product> CreateProduct(ProductModification product);
         Task DeleteProduct(Guid productId);
         Task<IEnumerable<ProductCategory>> GetProductCategories();
-        Task<IEnumerable<Order>> GetOrders();
+        Task<int> GetTotalOrderCount();
+        Task<IEnumerable<Order>> GetOrders(int take, int skip = 0);
         Task<Order> GetOrder(Guid orderId);
     }
 }

@@ -27,23 +27,34 @@ namespace CommonShop.WebApiGateway.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetSimpleOrders()
+        public async Task<IActionResult> GetSimpleOrders([FromQuery] int pageSize, [FromQuery] int pageNumber)
         {
-            var orders = await _salesService.GetOrders();
+            var orders = await _salesService.GetOrders(pageSize, (pageNumber - 1) * pageSize);
+            var totalOrderCount = await _salesService.GetTotalOrderCount();
 
-            var simpleOrders = _mapper.Map<IEnumerable<SimpleOrder>>(orders);
+            var response = new SimpleOrderListing()
+            {
 
-            return Ok(simpleOrders);
+                Orders = _mapper.Map<IEnumerable<SimpleOrder>>(orders),
+                TotalOrderCount = totalOrderCount
+            };
+
+            return Ok(response);
         }
 
         [HttpGet("admin")]
-        public async Task<IActionResult> GetSimpleOrdersWithStatus()
+        public async Task<IActionResult> GetSimpleOrdersWithStatus([FromQuery] int pageSize, [FromQuery] int pageNumber)
         {
-            var orders = await _salesService.GetOrders();
+            var orders = await _salesService.GetOrders(pageSize, (pageNumber - 1) * pageSize);
+            var totalOrderCount = await _salesService.GetTotalOrderCount();
 
-            var simpleOrders = _mapper.Map<IEnumerable<SimpleOrderForAdmin>>(orders);
+            var response = new SimpleOrderListingForAdmin()
+            {
+                Orders = _mapper.Map<IEnumerable<SimpleOrderForAdmin>>(orders),
+                TotalOrderCount = totalOrderCount
+            };
 
-            return Ok(simpleOrders);
+            return Ok(response);
         }
 
         [HttpGet("{orderId}")]

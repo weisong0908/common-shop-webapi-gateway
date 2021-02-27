@@ -119,10 +119,26 @@ namespace CommonShop.WebApiGateway.Services
             return null;
         }
 
-        public async Task<IEnumerable<Order>> GetOrders()
+        public async Task<int> GetTotalOrderCount()
         {
             var client = _httpClientFactory.CreateClient("sales service");
-            var response = await client.GetAsync("/orders");
+            var response = await client.GetAsync($"/orders/count");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var totalOrderCount = JsonSerializer
+                    .Deserialize<int>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                return totalOrderCount;
+            }
+
+            return 0;
+        }
+
+        public async Task<IEnumerable<Order>> GetOrders(int take, int skip = 0)
+        {
+            var client = _httpClientFactory.CreateClient("sales service");
+            var response = await client.GetAsync($"/orders?take={take}&skip={skip}");
 
             if (response.IsSuccessStatusCode)
             {
