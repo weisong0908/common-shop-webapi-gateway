@@ -33,7 +33,7 @@ namespace CommonShop.WebApiGateway.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize("read:products")]
         public async Task<IActionResult> GetProducts([FromQuery] int pageSize, [FromQuery] int pageNumber, [FromQuery] string category)
         {
             var products = await _salesService.GetProducts(pageSize, (pageNumber - 1) * pageSize, category);
@@ -53,6 +53,7 @@ namespace CommonShop.WebApiGateway.Controllers
         }
 
         [HttpGet("{productId}")]
+        [Authorize("read:products")]
         public async Task<IActionResult> GetProduct(Guid productId)
         {
             var product = await _salesService.GetProduct(productId);
@@ -64,6 +65,7 @@ namespace CommonShop.WebApiGateway.Controllers
         }
 
         [HttpPut("{productId}")]
+        [Authorize("write:products")]
         [Consumes(MediaTypeNames.Application.Json)]
         public async Task<IActionResult> UpdateProduct(Guid productId, ProductModification productModification)
         {
@@ -83,6 +85,7 @@ namespace CommonShop.WebApiGateway.Controllers
         }
 
         [HttpPost]
+        [Authorize("write:products")]
         [Consumes(MediaTypeNames.Application.Json)]
         public async Task<IActionResult> CreateProduct(ProductModification productModification)
         {
@@ -101,6 +104,7 @@ namespace CommonShop.WebApiGateway.Controllers
         }
 
         [HttpDelete("{productId}")]
+        [Authorize("write:products")]
         public async Task<IActionResult> DeleteProduct(Guid productId)
         {
             try
@@ -116,6 +120,7 @@ namespace CommonShop.WebApiGateway.Controllers
         }
 
         [HttpGet("categories")]
+        [Authorize("read:products")]
         public async Task<IActionResult> GetProductCategories()
         {
             var productCategories = await _salesService.GetProductCategories();

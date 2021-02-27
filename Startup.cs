@@ -15,6 +15,8 @@ using Microsoft.OpenApi.Models;
 using AutoMapper;
 using CommonShop.WebApiGateway.Mappings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using CommonShop.WebApiGateway.Requirements;
 
 namespace CommonShop.WebApiGateway
 {
@@ -53,13 +55,21 @@ namespace CommonShop.WebApiGateway
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(options =>
             {
-                options.Authority = Configuration.GetSection("Authentication:Authority").Get<string>();
-                options.Audience = Configuration.GetSection("Authentication:Audience").Get<string>();
+                options.Authority = Configuration["Authentication:Authority"];
+                options.Audience = Configuration["Authentication:Audience"];
             });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("read:products", policy => policy.Requirements.Add(new HasPermissionRequirement("read:products", Configuration["Authentication:Authority"])));
+                options.AddPolicy("write:products", policy => policy.Requirements.Add(new HasPermissionRequirement("write:products", Configuration["Authentication:Authority"])));
+            });
+
+            services.AddSingleton<IAuthorizationHandler, HasPermissionHandler>();
 
             services.AddHttpClient("sales service", configureClient =>
             {
-                configureClient.BaseAddress = new Uri(Configuration.GetSection("Services:Sales").Get<string>());
+                configureClient.BaseAddress = new Uri(Configuration["Services:Sales"]);
             });
             services.AddScoped<ISalesService, SalesService>();
             services.AddScoped<IWarehouseService, WarehouseService>();
